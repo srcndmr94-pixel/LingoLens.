@@ -1,1 +1,37 @@
 
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@v4
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Gradle izni ver
+        run: chmod +x gradlew
+
+      - name: Debug APK derle
+        run: ./gradlew clean assembleDebug --stacktrace
+
+      - name: APK dosyasını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: LingoLens-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          
